@@ -11,11 +11,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Controller
 public class ShopController {
 
-    @Autowired
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
+
+    private final ProductService productService;
 
     @Autowired
-    private ProductService productService;
+    private ShopController(CategoryService categoryService,ProductService productService) {
+        this.categoryService = categoryService;
+        this.productService = productService;
+    }
 
     @GetMapping({"/","/home"})
     public String home(Model model) {
@@ -38,8 +42,7 @@ public class ShopController {
 
     @GetMapping("/shop/viewproduct/{id}")
     public String viewProduct(Model model, @PathVariable("id") int id) {
-        model.addAttribute("product",productService.getProduct(id).get());
+        model.addAttribute("product",productService.getProduct(id).orElse(null));
         return "viewProduct";
     }
-
 }

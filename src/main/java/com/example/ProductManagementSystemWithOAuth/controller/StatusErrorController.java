@@ -2,7 +2,6 @@ package com.example.ProductManagementSystemWithOAuth.controller;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -15,10 +14,11 @@ public class StatusErrorController implements ErrorController {
     public String errorHandling(HttpServletRequest request) {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         if (status != null) {
-            Integer statusCode = Integer.valueOf(status.toString());
-            if(statusCode == HttpStatus.NOT_FOUND.value())
+            int statusCode = Integer.parseInt(status.toString());
+            HttpStatus httpStatus = HttpStatus.valueOf(statusCode);
+            if(httpStatus == HttpStatus.NOT_FOUND)
                 return "error/404";
-            else if(statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value())
+            else if(httpStatus == HttpStatus.INTERNAL_SERVER_ERROR)
                 return "error/500";
         }
         return "error/error";

@@ -14,13 +14,17 @@ import java.util.Optional;
 @Service
 public class CustomerUserDetailService implements UserDetailsService {
 
+    private final UserRepository userRepository;
+
     @Autowired
-    UserRepository userRepository;
+    private CustomerUserDetailService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findUserByEmail(email);
-        user.orElseThrow(() -> new UsernameNotFoundException("No User Found!!"));
-        return user.map(CustomUserDetail::new).get();
+        User userObj = user.orElseThrow(() -> new UsernameNotFoundException("No User Found!!"));
+        return new CustomUserDetail(userObj);
     }
 }

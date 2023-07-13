@@ -19,7 +19,7 @@ public class User {
     @Column(nullable = false)
     private String lastName;
     @Column(nullable = false,unique = true)
-    @Email
+    @Email(message = "Invalid email address")
     private String email;
     private String password;
     @ManyToMany(cascade = CascadeType.MERGE,fetch = FetchType.EAGER)
@@ -32,7 +32,7 @@ public class User {
                     @JoinColumn(name = "ROLES_ID",referencedColumnName = "ID")
             }
     )
-    private List<Role> role;
+    private List<Role> roles;
 
     public User(User user) {
         this.id = user.getId();
@@ -40,7 +40,7 @@ public class User {
         this.lastName = user.getLastName();
         this.email = user.getEmail();
         this.password = user.getPassword();
-        this.role = user.getRole();
+        this.roles = user.getRoles();
     }
 
     public User() {

@@ -22,13 +22,18 @@ import java.util.Optional;
 @Slf4j
 public class AdminController {
 
-    public static String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/images/productImages";
+    public final String uploadDir;
+
+    private final CategoryService categoryService;
+
+    private final ProductService productService;
 
     @Autowired
-    CategoryService categoryService;
-
-    @Autowired
-    ProductService productService;
+    private AdminController(CategoryService categoryService, ProductService productService) {
+        this.categoryService = categoryService;
+        this.productService = productService;
+        this.uploadDir = Paths.get(System.getProperty("user.dir"), "src","main","resources","static","images","productImages").toString();
+    }
 
     //Category Section
     @GetMapping("/admin")
@@ -92,7 +97,13 @@ public class AdminController {
             Product product1 = new Product();
             product1.setProduct_id(productDTO.getId());
             product1.setName(productDTO.getName());
-            product1.setCategory(categoryService.getCategoryById(productDTO.getCategoryId()).get());
+            Optional<Category> category = categoryService.getCategoryById(productDTO.getCategoryId());
+            if(category.isPresent()) {
+                product1.setCategory(category.get());
+            } else {
+                log.error("Category not found with ID: {}",productDTO.getCategoryId());
+                return "404";
+            }
             product1.setPrice(productDTO.getPrice());
             product1.setWeight(productDTO.getWeight());
             product1.setDescription(productDTO.getDescription());
@@ -107,10 +118,12 @@ public class AdminController {
             product1.setImageName(imageUUID);
             productService.saveProduct(product1);
             return "redirect:/admin/products";
+        } catch (IOException e) {
+            log.error("Error occurred during file upload: {}",e.getMessage());
+            throw e;
         } catch (Exception e) {
-            log.error("Product Not Added...");
-            e.printStackTrace();
-            return "404";
+            log.error("Product Not Added: {}",e.getMessage());
+            throw e;
         }
     }
 

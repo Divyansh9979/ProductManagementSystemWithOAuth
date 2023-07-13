@@ -9,5 +9,4 @@ public class ProductManagementSystemWithOAuthApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ProductManagementSystemWithOAuthApplication.class, args);
 	}
-
 }
